@@ -12,7 +12,7 @@ import csv
 # SIMULATION MODE, SPEED, AND MAP CONTROLS ========================================================================
 
 # the mode for this program - should we animate each step in the robot's path, or each completed trail?
-    # PICK ONE OF THE FOLLOWING TWO OPTIONS.
+# PICK ONE OF THE FOLLOWING TWO OPTIONS.
 # step_mode = LearnerFile.STEP_MODE_ONE_PATH
 step_mode = LearnerFile.STEP_MODE_SINGLE_STEP
 
@@ -23,18 +23,20 @@ logging.basicConfig(level=logging.INFO)  # simple version to the output console
 #                     datefmt="%H:%M:%S %p --- ")  # more robust, sent to a file cNode = Tuple[int, T]
 
 # STARTING CLASS ==================================================================================================
+
+
 class QLearnRunner:
     def __init__(self, delay: float, map_filename: str):
         self.__delay_time = delay
 
-        self.__window:Optional[Window] = None
+        self.__window: Optional[Window] = None
         self.__main_map: Optional[Map] = None
-        self.__start_position: Tuple[int,int] = (-1,-1)
+        self.__start_position: Tuple[int, int] = (-1, -1)
         self.__is_animating = True
 
         self.load_data(map_filename)
-        self.__Q_grid: List[List[int]] = [[0 for c in range(self.__main_map.shape()[1])]
-                                               for r in range(self.__main_map.shape()[0])]
+        self.__Q_grid: List[List[int]] = [[0 for _c in range(self.__main_map.shape()[1])]
+                                             for _r in range(self.__main_map.shape()[0])]
         self.__transition_manager = TransitionManager(self.__main_map, self.__Q_grid)
         self.__learner = Learner(self.__Q_grid, self.__transition_manager, self.__start_position)
 
@@ -43,10 +45,10 @@ class QLearnRunner:
         pyglet.clock.schedule_interval(self.perform_learning_iteration, self.__delay_time)
 
         # set up the window that will show the graphics
-        window = Window(self.__main_map, self.__learner, self.toggle_animation)
+        self.__window = Window(self.__main_map, self.__learner, self.toggle_animation)
         pyglet.app.run()
 
-    def load_data(self, filename:str):
+    def load_data(self, filename: str):
         """
         Loads the map from a tab-separated-values (tsv) file, as well as the starting location on the map
         :return:
@@ -108,11 +110,11 @@ class QLearnRunner:
             pyglet.clock.schedule_interval(self.perform_learning_iteration, self.__delay_time)
         self.__is_animating = not self.__is_animating
 
-    def perform_learning_iteration(self, dt):
+    def perform_learning_iteration(self, _dt):  # the underscore marks the dt parameter as unused.
         """
         tells the learner to attempt a path, or one step along a path, depending on the value of "step_mode."
         Then it updates what should be shown in the window... the next time window refreshes.
-        :param dt: the amount of time since the last time we called this. (Unused, but required)
+        :param _dt: the amount of time since the last time we called this. (Unused, but required)
         :return: None
         """
         if step_mode == LearnerFile.STEP_MODE_ONE_PATH:
@@ -124,6 +126,7 @@ class QLearnRunner:
 
         if self.__window is not None:
             self.__window.update()
+
 
 if __name__ == "__main__":
     QLRunner = QLearnRunner(0.25, "MapExample1.tsv")

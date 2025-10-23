@@ -1,23 +1,28 @@
+from typing import Callable
+
 import pyglet
 from MapFile import Map
 from LearnerFile import Learner
 import CellFile
 
+
 class Window (pyglet.window.Window):
     """
     This class (which descends from a generic Window class) describes the details about a window used in this program.
     """
-    def __init__(self,map:Map, learner:Learner, toggle_animation):
+    def __init__(self, rewards_map: Map, learner: Learner, toggle_animation: Callable):  # "Callable" means a method
         """
         start the window off with the given information and any variables we'll be using.
-        :param map:
+        :param rewards_map:
         :param learner:
         """
         # first call the "superclass" - this is what actually makes the window.
-        super(Window,self).__init__(map.num_cols*CellFile.CELL_SIZE,(map.num_rows+1)*CellFile.CELL_SIZE,"World")
+        super(Window, self).__init__(rewards_map.num_cols * CellFile.CELL_SIZE,
+                                     (rewards_map.num_rows + 1) * CellFile.CELL_SIZE,
+                                     "World")
 
         # copy the given information into longer-term variables.
-        self.map = map
+        self.map = rewards_map
         self.learner = learner
         # these are variables we'll need when drawing the window. For the moment, we're setting them to None, so
         # the computer knows that it has to keep track of the variable, but it isn't holding anything yet.
@@ -35,8 +40,8 @@ class Window (pyglet.window.Window):
         This method gets called _often_ (as in fractions of a second) it is what makes the content of the window appear.
         :return:
         """
-        self.clear() # wipe the screen
-        self.batch.draw() # redraw the current contents.
+        self.clear()  # wipe the screen
+        self.batch.draw()  # redraw the current contents.
 
     def on_mouse_release(self, x, y, button, modifiers):
         self.toggle_animation_callback()
