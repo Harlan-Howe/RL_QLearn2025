@@ -9,13 +9,6 @@ from WindowFile import Window
 import pyglet
 import csv
 
-# SIMULATION MODE, SPEED, AND MAP CONTROLS ========================================================================
-
-# the mode for this program - should we animate each step in the robot's path, or each completed trail?
-# PICK ONE OF THE FOLLOWING TWO OPTIONS.
-# step_mode = LearnerFile.STEP_MODE_ONE_PATH
-step_mode = LearnerFile.STEP_MODE_SINGLE_STEP
-
 # LOGGING SETUP ===================================================================================================
 logging.basicConfig(level=logging.INFO)  # simple version to the output console
 # logging.basicConfig(level=logging.DEBUG, filename=f"log {datetime.datetime.now():%m-%d@%H:%M:%S}.txt",
@@ -26,8 +19,9 @@ logging.basicConfig(level=logging.INFO)  # simple version to the output console
 
 
 class QLearnRunner:
-    def __init__(self, delay: float, map_filename: str):
-        self.__delay_time = delay
+    def __init__(self, map_filename: str):
+        self.__delay_time = 1.0
+        self.__step_mode: int = LearnerFile.STEP_MODE_SINGLE_STEP
 
         self.__window: Optional[Window] = None
         self.__main_map: Optional[Map] = None
@@ -40,8 +34,10 @@ class QLearnRunner:
         self.__transition_manager = TransitionManager(self.__main_map, self.__Q_grid)
         self.__learner = Learner(self.__Q_grid, self.__transition_manager, self.__start_position)
 
-    def start(self):
+    def start(self, step_mode:int = LearnerFile.STEP_MODE_SINGLE_STEP, time_step: float = 1.0):
         # This is what calls "perform_learning_iteration()" periodically. The number here is the seconds between calls.
+        self.__delay_time = time_step
+        self.__step_mode = step_mode
         pyglet.clock.schedule_interval(self.perform_learning_iteration, self.__delay_time)
 
         # set up the window that will show the graphics
@@ -117,17 +113,20 @@ class QLearnRunner:
         :param _dt: the amount of time since the last time we called this. (Unused, but required)
         :return: None
         """
-        if step_mode == LearnerFile.STEP_MODE_ONE_PATH:
+        if self.__step_mode == LearnerFile.STEP_MODE_ONE_PATH:
             self.__learner.explore_path()
-        elif step_mode == LearnerFile.STEP_MODE_SINGLE_STEP:
+        elif self.__step_mode == LearnerFile.STEP_MODE_SINGLE_STEP:
             continue_on_path = self.__learner.do_step()
             if not continue_on_path:
                 self.__learner.reset_robot()
+        else:
+            raise Exception("self.__step_mode is not an allowed value.")
 
         if self.__window is not None:
             self.__window.update()
 
 
 if __name__ == "__main__":
-    QLRunner = QLearnRunner(0.25, "MapExample1.tsv")
-    QLRunner.start()
+    QLRunner = QLearnRunner("MapExample1.tsv")
+    QLRunner.start(step_mode=LearnerFile.STEP_MODE_SINGLE_STEP, time_step=0.25)
+    # QLRunner.start(step_mode=LearnerFile.STEP_MODE_ONE_PATH, time_step=0.05)
