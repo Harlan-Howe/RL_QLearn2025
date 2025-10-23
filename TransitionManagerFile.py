@@ -1,15 +1,15 @@
 from MapFile import Map
-from CellFile import Cell
 from typing import Tuple, List
 import random
-Coordinates = Tuple[int, int] #row, col
+Coordinates = Tuple[int, int]  # row, col
 UP = 0
 LEFT = 1
 DOWN = 2
 RIGHT = 3
 
-ACTION_NAMES = ("UP","LEFT","DOWN","RIGHT")
+ACTION_NAMES = ("UP", "LEFT", "DOWN", "RIGHT")
 MOVE_PENALTY = -1
+
 
 class TransitionManager:
     """
@@ -17,14 +17,14 @@ class TransitionManager:
     rewards directly. It has several methods that allow the Learner to find out what will happen if it attempts a
     given action, and lets the Learner calculate the "best" action from a given point.
     """
-    def __init__(self, map: Map, Q_grid: List[List[int]]):
+    def __init__(self, reward_map: Map, Q_grid: List[List[int]]):
         """
         creates a new Transition object, which keeps track of both the map and the Q_grid. The learner shares the
         Q_grid, but is not allowed to directly see the map.
-        :param map:
+        :param reward_map:
         :param Q_grid:
         """
-        self.myMap = map
+        self.myMap = reward_map
         self.Q_grid = Q_grid
 
         # a bit of shorthand for how much to change (row, col) for "Up, Right, Down, Left".
@@ -32,7 +32,8 @@ class TransitionManager:
 
         self.stochastic_levels = self.generate_probabilities()
 
-    def generate_probabilities(self) -> Tuple[float, float, float, float]:
+    @staticmethod
+    def generate_probabilities() -> Tuple[float, float, float, float]:
         """
         In an ideal world, the robot will go in whatever mode we tell it to - this would be the "deterministic"
           behavior.
@@ -47,13 +48,13 @@ class TransitionManager:
                    requested.
         :return: a tuple of four probabilities, which MUST add up to 1.0.
         """
-        return (1.0, 0.0, 0.0, 0.0) #deterministic - always goes as expected
-        # return (0.8, 0.1, 0, 0.1) #stochastic, going straight 80% of the time.
+        return 1.0, 0.0, 0.0, 0.0  # deterministic - always goes as expected
+        # return 0.8, 0.1, 0.0, 0.1  # stochastic, going straight 80% of the time.
 
     def perform_action(self, s: Coordinates, a: int) -> Tuple[Coordinates, int]:
         """
-        Attempt to move in the given direction, a, from location s, returning the new location, s'.
-        If there is a wall in the way, then s' = s. If s' is a terminal location, set Q = reward for that location.
+        Attempt to move in the given direction, a, from location s, returning the new location, s’.
+        If there is a wall in the way, then s’ = s. If s’ is a terminal location, set Q = reward for that location.
         :param s: starting position
         :param a: action (one of the four directions)
         :return: the new position of our robot, and whether the robot is now in a non-terminal location.
@@ -69,7 +70,7 @@ class TransitionManager:
         else:
             s_prime = new_pos
         self.myMap.get_cell_at(s_prime[0], s_prime[1]).visited = True
-        reward = self.myMap.get_cell_at(s_prime[0],s_prime[1]).reward
+        reward = self.myMap.get_cell_at(s_prime[0], s_prime[1]).reward
         if reward < -50 or reward > 0:
             return s_prime, reward
         else:
@@ -98,11 +99,11 @@ class TransitionManager:
         # print(f"{s_prime=}")
         return self.Q_grid[s_prime[0]][s_prime[1]]
 
-    def get_expected_Q_for_action_from_pos(self, a:int, s: Coordinates):
+    def get_expected_Q_for_action_from_pos(self, a: int, s: Coordinates):
         """
         finds the expectation value for the move a from position s. Specifically, it finds the sum over
         all the directional shifts in stochastic_levels of the probability stored in that location in the
-        list times the Q for the cell (s') where you would wind up if you went that way.
+        list times the Q for the cell (s’) where you would wind up if you went that way.
 
         Note that for the deterministic version of stochastic_levels (i.e, (1,0,0,0)) this is just one times
         Q found in the direction of the desired action, a. (Plus zero, plus zero, plus zero.)
@@ -120,7 +121,7 @@ class TransitionManager:
         Q = 0
         for i in range(4):
             if self.stochastic_levels[i] == 0:
-                continue # skip any zero-weighted values.
+                continue  # skip any zero-weighted values.
             Q += self.stochastic_levels[i] * self.get_actual_Q_for_action_from_pos((a+i) % 4, s)
         return Q
 
@@ -132,7 +133,7 @@ class TransitionManager:
         the time, a two never (0% of the time), and a three 10% of the time.
         :return:
         """
-        r = random.random() # a random number from 0 ≤ r < 1
+        r = random.random()  # a random number from 0 ≤ r < 1
         sum_levels = 0
         for i in range(4):
             sum_levels += self.stochastic_levels[i]
@@ -140,4 +141,3 @@ class TransitionManager:
                 return i
 
         raise RuntimeError(f"Problem generating action_modifier. {r=}\t{self.stochastic_levels=}\t{sum_levels=}")
-
