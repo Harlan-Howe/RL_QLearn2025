@@ -17,7 +17,7 @@ class TransitionManager:
     rewards directly. It has several methods that allow the Learner to find out what will happen if it attempts a
     given action, and lets the Learner calculate the "best" action from a given point.
     """
-    def __init__(self, reward_map: Map, Q_grid: List[List[int]]):
+    def __init__(self, reward_map: Map, Q_grid: List[List[float]]):
         """
         creates a new Transition object, which keeps track of both the map and the Q_grid. The learner shares the
         Q_grid, but is not allowed to directly see the map.
@@ -77,6 +77,17 @@ class TransitionManager:
             return s_prime, reward+MOVE_PENALTY
 
     def get_best_neighbor_Q(self, s: Coordinates, a_list=(0, 1, 2, 3)) -> Tuple[float, int]:
+        """
+        considers each of the possible moves (a_list) from the current locations (s) and finds the Q values if you
+         made that move, returning the highest Q option and the action (a) that would give that value.
+        :param s: the current position of the robot
+        :param a_list: a list of possible moves that the robot might take
+        :return: the highest Q and the action that leads to it.
+        """
+        # TODO: There is a bug in this code. Right now, if there is a tie for the best option, it always picks the
+        #  first option it finds. This may limit (or at least bias) our options. Instead, if there is a two-way,
+        #  three-way, or even four-way tie, select the action randomly from the best options.
+
         best_Q = -999999
         best_a = 0
 
@@ -88,15 +99,20 @@ class TransitionManager:
         return best_Q, best_a
 
     def get_actual_Q_for_action_from_pos(self, a: int, s: Coordinates) -> float:
+        """
+        find the value of Q if you determinisitically take the action, a, from location s (i.e., if you successfully
+        moved in the intended direction.
+        :param a: action to consider (numerical code for U, L, D, R)
+        :param s: the starting location
+        :return: the Q value at the square where the robot would wind up. Note: the robot does not actually perform
+        this move.
+        """
         new_pos = (max(0, min(self.myMap.num_rows, s[0] + self.deltas[a % 4][0])),
                    max(0, min(self.myMap.num_cols, s[1] + self.deltas[a % 4][1])))
-        # print(f"{s=}\t{ACTION_NAMES[a]}\t{new_pos=}")
-        # print(f"{self.myMap.get_cell_at(new_pos[0], new_pos[1]).reward=}")
         if self.myMap.get_cell_at(new_pos[0], new_pos[1]).reward <= -9000:
             s_prime = s
         else:
             s_prime = new_pos
-        # print(f"{s_prime=}")
         return self.Q_grid[s_prime[0]][s_prime[1]]
 
     def get_expected_Q_for_action_from_pos(self, a: int, s: Coordinates):
@@ -131,7 +147,8 @@ class TransitionManager:
         angle moved. This is done with a probability established by the stochastic_levels. That is, if the
         stochastic_levels are (0.8, 0.1, 0, 0.1), then we would expect to return a zero 80% of the time, a one 10% of
         the time, a two never (0% of the time), and a three 10% of the time.
-        :return:
+        :return: the value (0-3), inclusive, that will later be added to an action to get the actual action that will
+        happen.
         """
         r = random.random()  # a random number from 0 ≤ r < 1
         sum_levels = 0
