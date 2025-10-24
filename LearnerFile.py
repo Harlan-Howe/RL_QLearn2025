@@ -104,7 +104,7 @@ class Learner:
         # decide on an action to take... this "action_num" will be a number corresponding to which direction you
         # want to go.
         action_num = self.select_action(self.current_coords)
-        # self.latest_action_list.append(TransitionManagerFile.ACTION_NAMES[action_num])
+        # self.latest_action_list.append(TransitionManagerFile.ACTION_NAMES[action_num])  # debugging. see line 78.
 
         # Make the move, based on the action selected - you get back the new location and the reward on that square.
         # Note: "perform_action" returns _two_ pieces of information (which is special to Python), so
@@ -135,26 +135,25 @@ class Learner:
         :return: a number 0-3 indicating which direction the robot should be ordered to move.
         ( 0 --> up; 1 --> right; 2 --> down; 3 --> left)
         """
-        # get a list of numbers 0-3 in a random order
-        action_list = self.get_randomized_direction_list()
 
         # TODO: based on self.exploration_ratio (i.e., epsilon), either return a random action or what the transition
         #  manager thinks will be the best action to take.
         #  Here are the pieces for this:
-        #   "action_list" is now a randomized list of possible directions. (So picking the first item on that list is
-        #                 pretty random.)
         #   "self.exploration_ratio" is the equivalent of epsilon in our discussions. It is a number 0-1; the higher it
         #                 is, the more likely we are to "explore" (i.e., go random) than "exploit" (i.e., use Q to
         #                 choose an action.)
         #   "random.random()" will pick a random number between 0-1.
         #   "self.transition_manager.get_best_neighbor_Q(position, action_list)" will ask the transition manager to
         #                 look around at the neighboring squares that are reachable by the options in action_list and
-        #                 pick the one with the largest Q value. It returns (best_Q, best_a) - a tuple with the highest
-        #                 Q value you could get and the action that led to it - you only need the second part. (This
-        #                 method also gets called elsewhere in the program, where it needs to know the best Q, but we
-        #                 don't care in this method.)
-        #  So you need to return _either_ a random action, or the action that you get back from the transition manager,
-        #    depending on epsilon and the random number picked.
+        #                 pick the one with the largest Q value. (Action_list should be a list of [0, 1, 2, 3] options,
+        #                 potentially shuffled.) This method returns (best_Q, best_a) - a tuple with the highest
+        #                 Q value you could get and the action (0-3) that led to it - you only need the second part.
+        #                 (This method also gets called elsewhere in the program, where it needs to know the best Q,
+        #                 but we don't care what the Q actually is in this method.)
+        #  So you need to return _either_ a random action (0-3), inclusive; or the action that you get back from the
+        #  transition manager; depending on epsilon and the random number picked. (Either way, you're returning an
+        #  action.)
+
         return 0  # replace this!!!!
 
     def update_Q(self, s: Coordinates, reward: int):
@@ -169,6 +168,7 @@ class Learner:
         # get the highest choice of Q from the transition manager.
         # (Note this method returns both the highest q and the action that gave it - we only need the former for this
         # method. The previous method also calls this method, and it cares about best_a, but it doesn't get used here.)
+
         best_Q, _best_a = self.transition_manager.get_best_neighbor_Q(s)  # the _ before best_a means we won't use it.
         x = s[0]
         y = s[1]
@@ -195,15 +195,7 @@ class Learner:
 
         # Now combine that "calculated" score with the existing score. Use the learning rate to combine them.
 
-    @staticmethod
-    def get_randomized_direction_list():
-        """
-        generates a list of [0,1,2,3] scrambled into random order.
-        :return: e.g., [3,1,0,2]
-        """
-        action_list = [0, 1, 2, 3]
-        random.shuffle(action_list)
-        return action_list
+
 
 # ---------------------------------------------------  DRAWING CODE --------------------------------------------
 # The rest of this file is about displaying what the robot is doing on the screen.
