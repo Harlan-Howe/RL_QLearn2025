@@ -29,7 +29,7 @@ class QLearnRunner:
         self.__is_animating = True
 
         self.load_data(map_filename)
-        self.__Q_grid: List[List[int]] = [[0 for _c in range(self.__main_map.shape()[1])]
+        self.__Q_grid: List[List[float]] = [[0.0 for _c in range(self.__main_map.shape()[1])]
                                              for _r in range(self.__main_map.shape()[0])]
         self.__transition_manager = TransitionManager(self.__main_map, self.__Q_grid)
         self.__learner = Learner(self.__Q_grid, self.__transition_manager, self.__start_position)
@@ -127,6 +127,6 @@ class QLearnRunner:
 
 
 if __name__ == "__main__":
-    QLRunner = QLearnRunner("MapExample1.tsv")
+    QLRunner = QLearnRunner(map_filename="MapExample1.tsv")
     QLRunner.start(step_mode=LearnerFile.STEP_MODE_SINGLE_STEP, time_step=0.25)
     # QLRunner.start(step_mode=LearnerFile.STEP_MODE_ONE_PATH, time_step=0.05)
