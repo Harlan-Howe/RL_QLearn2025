@@ -5,6 +5,10 @@ import copy
 import CellFile
 from TransitionManagerFile import TransitionManager
 
+
+# this is the font size of the text at the top of the "world" - feel free to tinker to make it legible.
+STAT_FONT_SIZE = 14
+
 Coordinates = Tuple[int, int]
 
 # constants - please don't change these two.
@@ -301,7 +305,7 @@ class Learner:
         # other labels to show at the top of the window.
         self.things_to_draw.append(pyglet.text.Label(text=f"𝛼 = {self.learning_rate:.2f}",
                                                      font_name="Arial",
-                                                     font_size=10,
+                                                     font_size=STAT_FONT_SIZE,
                                                      color=(255, 255, 255, 255),
                                                      y=(len(self.Q_grid)+1)*CellFile.CELL_SIZE-2,
                                                      x=2,
@@ -311,7 +315,7 @@ class Learner:
                                                      group=path_group))
         self.things_to_draw.append(pyglet.text.Label(text=f"ɣ = {self.discount_factor:.2f}",
                                                      font_name="Arial",
-                                                     font_size=10,
+                                                     font_size=STAT_FONT_SIZE,
                                                      color=(255, 255, 255, 255),
                                                      y=(len(self.Q_grid) + 1) * CellFile.CELL_SIZE - 2,
                                                      x=int(len(self.Q_grid[0])*CellFile.CELL_SIZE/2),
@@ -321,7 +325,7 @@ class Learner:
                                                      group=path_group))
         self.things_to_draw.append(pyglet.text.Label(text=f"ε = {self.exploration_ratio:.2f}",
                                                      font_name="Arial",
-                                                     font_size=10,
+                                                     font_size=STAT_FONT_SIZE,
                                                      color=(255, 255, 255, 255),
                                                      y=(len(self.Q_grid) + 1) * CellFile.CELL_SIZE - 2,
                                                      x=int(len(self.Q_grid[0]) * CellFile.CELL_SIZE)-2,
@@ -331,7 +335,7 @@ class Learner:
                                                      group=path_group))
         self.things_to_draw.append(pyglet.text.Label(text=f"current R = {self.total_reward_for_current_run}",
                                                      font_name="Arial",
-                                                     font_size=10,
+                                                     font_size=STAT_FONT_SIZE,
                                                      color=(255, 255, 255, 255),
                                                      y=(len(self.Q_grid) + 1) * CellFile.CELL_SIZE - 20,
                                                      x=2,
@@ -342,7 +346,7 @@ class Learner:
 
         self.things_to_draw.append(pyglet.text.Label(text=f"last R = {self.latest_reward}",
                                                      font_name="Arial",
-                                                     font_size=10,
+                                                     font_size=STAT_FONT_SIZE,
                                                      color=(255, 255, 255, 255),
                                                      y=(len(self.Q_grid) + 1) * CellFile.CELL_SIZE - 20,
                                                      x=int(len(self.Q_grid[0])*CellFile.CELL_SIZE/2),
@@ -353,7 +357,7 @@ class Learner:
 
         self.things_to_draw.append(pyglet.text.Label(text=f"Run #: {self.run_num}",
                                                      font_name="Arial",
-                                                     font_size=10,
+                                                     font_size=STAT_FONT_SIZE,
                                                      color=(255, 255, 255, 255),
                                                      y=(len(self.Q_grid) + 1) * CellFile.CELL_SIZE - 20,
                                                      x=int(len(self.Q_grid[0]) * CellFile.CELL_SIZE)-2,
@@ -364,7 +368,7 @@ class Learner:
 
         self.things_to_draw.append(pyglet.text.Label(text=f"mean reward = {self.mean_reward:.1f}",
                                                      font_name="Arial",
-                                                     font_size=10,
+                                                     font_size=STAT_FONT_SIZE,
                                                      color=(255, 255, 255, 255),
                                                      y=(len(self.Q_grid) + 1) * CellFile.CELL_SIZE - 40,
                                                      x=2,
