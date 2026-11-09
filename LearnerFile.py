@@ -283,7 +283,7 @@ class Learner:
                                            x2=int((self.current_path[i][1] + 0.5) * CellFile.CELL_SIZE)+2,
                                            y2=int((len(self.Q_grid) - self.current_path[i][0] - 0.5) *
                                                   CellFile.CELL_SIZE) - 2,
-                                           width=3,
+                                           thickness=3,
                                            color=(64, 255, 255),
                                            batch=batch,
                                            group=path_group))
