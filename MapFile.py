@@ -9,20 +9,20 @@ class Map:
     This class is what holds the information about the rewards for each cell in our world, as well as the
     starting location for all explorations.
     """
-    def __init__(self, num_cells_across: int, num_cells_down: int):
+    def __init__(self, num_rows: int, num_cols: int):
         """
         Creates a Map with empty cells of the given size.
-        :param num_cells_across:
-        :param num_cells_down:
+        :param num_cols:
+        :param num_rows:
         """
-        self.num_cols = num_cells_across
-        self.num_rows = num_cells_down
+        self.num_cols = num_cols
+        self.num_rows = num_rows
         self.start_pos = (-1, -1)  # temporary - we'll update this later.
 
-        self.cell_grid: List[List[Optional[Cell]]] = [[None for _c in range(num_cells_across)]
-                                                      for _r in range(num_cells_down)]
-        for col in range(num_cells_across):
-            for row in range(num_cells_down):
+        self.cell_grid: List[List[Optional[Cell]]] = [[None for _c in range(num_cols)]
+                                                      for _r in range(num_rows)]
+        for col in range(num_cols):
+            for row in range(num_rows):
                 # start each cell with reward = 0, and tell each cell where it is and how tall the grid
                 # portion of the window is.
                 self.cell_grid[row][col] = Cell(col, row, 0, self.num_rows * CellFile.CELL_SIZE)
