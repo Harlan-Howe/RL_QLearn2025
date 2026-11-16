@@ -3,11 +3,11 @@ from typing import Tuple, List
 import random
 Coordinates = Tuple[int, int]  # row, col
 UP = 0
-LEFT = 1
+RIGHT = 1
 DOWN = 2
-RIGHT = 3
+LEFT = 3
 
-ACTION_NAMES = ("UP", "LEFT", "DOWN", "RIGHT")
+ACTION_NAMES = ("UP", "RIGHT", "DOWN", "LEFT")
 MOVE_PENALTY = -1
 
 
