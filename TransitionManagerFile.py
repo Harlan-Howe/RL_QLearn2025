@@ -76,7 +76,7 @@ class TransitionManager:
         else:
             return s_prime, reward+MOVE_PENALTY
 
-    def get_best_neighbor_Q(self, s: Coordinates, a_list=(0, 1, 2, 3)) -> Tuple[float, int]:
+    def get_best_neighbor_Q(self, s: Coordinates, a_list=(UP, RIGHT, DOWN, LEFT)) -> Tuple[float, int]:
         """
         considers each of the possible moves (a_list) from the current locations (s) and finds the Q values if you
          made that move, returning the highest Q option and the action (a) that would give that value.
