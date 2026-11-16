@@ -58,8 +58,8 @@ class QLearnRunner:
         for line in read_tsv:  # read one line of the file at a time. Keep going while there still are lines.
 
             if line_num == 0:  # first line of file determines the size of the map
-                num_cols, num_rows = self.parse_map_size(line)
-                self.__main_map = Map(num_cols, num_rows)
+                num_rows, num_cols = self.parse_map_size(line)
+                self.__main_map = Map(num_rows, num_cols)
 
             elif line_num == 1:  # second line of the file determines the starting location
                 self.parse_start_position(line)
