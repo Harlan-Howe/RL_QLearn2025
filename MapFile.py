@@ -83,6 +83,9 @@ class Map:
         output = ""
         for r in range(self.num_rows):
             for c in range(self.num_cols):
-                output += f"{self.cell_grid[r][c].reward}\t"
+                if self.cell_grid[r][c] is not None:
+                    output += f"{self.cell_grid[r][c].reward}\t"
+                else:
+                    output += "ø\t"
             output += "\n"
         return output
